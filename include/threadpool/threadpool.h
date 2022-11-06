@@ -125,16 +125,6 @@ protected:
         return true;
     }
 
-    bool hasTasks()
-    {
-        return !this->workerTaskQueue.empty();
-    }
-
-    bool hasTimedTasks()
-    {
-        return !this->timedTaskQueue.empty();
-    }
-
     void timedWorker()
     {
         FunctionType task;
@@ -147,13 +137,6 @@ protected:
             //std::this_thread::yield();
             std::this_thread::sleep_for(std::chrono::microseconds(500));
         } while (this->isRunning());
-    }
-
-    void waitForEmptyQueue()
-    {
-        while (this->hasTasks()) {
-            std::this_thread::yield();
-        }
     }
 
     void worker()
@@ -223,6 +206,16 @@ public:
         return this->workerThreadCount;
     }
 
+    bool hasTasks()
+    {
+        return !this->workerTaskQueue.empty();
+    }
+
+    bool hasTimedTasks()
+    {
+        return !this->timedTaskQueue.empty();
+    }
+
     bool isPaused() const
     {
         return this->paused;
@@ -264,5 +257,12 @@ public:
     void unpause()
     {
         this->paused = false;
+    }
+
+    void waitForEmptyQueue()
+    {
+        while (this->hasTasks()) {
+            std::this_thread::yield();
+        }
     }
 };
